@@ -13,7 +13,7 @@ import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 public class ReduceMain {
     public static void main(String[] args) throws Exception {
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
-
+        
         DataStreamSource<WaterSensor> dataStreamSource = env.fromElements(
                 new WaterSensor("1", 1L, 1),
                 new WaterSensor("1", 2L, 2),
@@ -22,18 +22,24 @@ public class ReduceMain {
                 new WaterSensor("3", 3L, 3),
                 new WaterSensor("3", 6L, 6)
         );
-
+        
         KeyedStream<WaterSensor, String> keyedStream = dataStreamSource.keyBy(waterSensor -> waterSensor.getId());
-
+        
         SingleOutputStreamOperator<WaterSensor> result = keyedStream.reduce(new ReduceFunction<WaterSensor>() {
             @Override
             public WaterSensor reduce(WaterSensor waterSensor1, WaterSensor waterSensor2) throws Exception {
                 return new WaterSensor(waterSensor1.getId(), waterSensor1.getTs() + waterSensor2.getTs(), waterSensor1.getVc() + waterSensor2.getVc());
             }
         });
-
+        
         result.print();
-
+        // 2> WaterSensor(id=1, ts=1, vc=1)
+        // 2> WaterSensor(id=1, ts=3, vc=3)
+        // 1> WaterSensor(id=2, ts=2, vc=2)
+        // 1> WaterSensor(id=2, ts=6, vc=6)
+        // 2> WaterSensor(id=3, ts=3, vc=3)
+        // 2> WaterSensor(id=3, ts=9, vc=9)
+        
         env.execute();
     }
 }
