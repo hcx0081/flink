@@ -10,12 +10,12 @@ import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 /**
  * {@code @description:}
  */
-public class FileSourceMain {
+public class FileMain {
     public static void main(String[] args) throws Exception {
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
         
         FileSource<String> fileSource = FileSource.forRecordStreamFormat(new TextLineInputFormat(), new Path("data/word"))
-                                                  .build();
+                .build();
         DataStreamSource<String> dataStreamSource = env.fromSource(fileSource, WatermarkStrategy.noWatermarks(), "fileSource");
         
         dataStreamSource.print();

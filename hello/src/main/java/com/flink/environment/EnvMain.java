@@ -1,4 +1,4 @@
-package com.flink.env;
+package com.flink.environment;
 
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 

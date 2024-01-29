@@ -10,16 +10,16 @@ import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 /**
  * {@code @description:}
  */
-public class KafkaSourceMain {
+public class KafkaMain {
     public static void main(String[] args) throws Exception {
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
         
         KafkaSource<String> kafkaSource = KafkaSource.<String>builder()
-                                                     .setBootstrapServers("192.168.100.100:9092")
-                                                     .setTopics("test")
-                                                     .setValueOnlyDeserializer(new SimpleStringSchema())
-                                                     .setStartingOffsets(OffsetsInitializer.earliest())
-                                                     .build();
+                .setBootstrapServers("192.168.100.100:9092")
+                .setTopics("test")
+                .setValueOnlyDeserializer(new SimpleStringSchema())
+                .setStartingOffsets(OffsetsInitializer.earliest())
+                .build();
         
         DataStreamSource<String> dataStreamSource = env.fromSource(kafkaSource, WatermarkStrategy.noWatermarks(), "kafkaSource");
         
