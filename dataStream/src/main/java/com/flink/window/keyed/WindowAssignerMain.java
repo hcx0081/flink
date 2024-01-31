@@ -6,8 +6,6 @@ import org.apache.flink.streaming.api.datastream.DataStreamSource;
 import org.apache.flink.streaming.api.datastream.KeyedStream;
 import org.apache.flink.streaming.api.datastream.SingleOutputStreamOperator;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
-import org.apache.flink.streaming.api.windowing.assigners.ProcessingTimeSessionWindows;
-import org.apache.flink.streaming.api.windowing.assigners.SessionWindowTimeGapExtractor;
 
 /**
  * {@code @description:}
@@ -27,13 +25,6 @@ public class WindowAssignerMain {
         });
         
         KeyedStream<WaterSensor, String> dataKS = dataDS.keyBy(WaterSensor::getId);
-        
-        dataKS.window(ProcessingTimeSessionWindows.withDynamicGap(new SessionWindowTimeGapExtractor<WaterSensor>() {
-            @Override
-            public long extract(WaterSensor element) {
-                return 0;
-            }
-        }))
         
         env.execute();
     }
