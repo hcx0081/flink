@@ -26,6 +26,7 @@ public class WindowAssignerMain {
         
         KeyedStream<WaterSensor, String> dataKS = dataDS.keyBy(WaterSensor::getId);
         
+        
         env.execute();
     }
 }
