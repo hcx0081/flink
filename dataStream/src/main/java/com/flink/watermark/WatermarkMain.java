@@ -1,6 +1,7 @@
 package com.flink.watermark;
 
 import com.flink.bean.WaterSensor;
+import com.flink.watermark.generator.MyBreakpointWatermarkGenerator;
 import org.apache.commons.lang3.time.DateFormatUtils;
 import org.apache.flink.api.common.eventtime.SerializableTimestampAssigner;
 import org.apache.flink.api.common.eventtime.WatermarkStrategy;
@@ -13,16 +14,17 @@ import org.apache.flink.streaming.api.windowing.time.Time;
 import org.apache.flink.streaming.api.windowing.windows.TimeWindow;
 import org.apache.flink.util.Collector;
 
-import java.time.Duration;
-
 /**
- * {@code @description:} 无序流设置水位线
+ * {@code @description:}
  */
-public class OutOfOrderMain {
+public class WatermarkMain {
     public static void main(String[] args) throws Exception {
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
         
         env.setParallelism(1);
+        
+        // 默认200ms
+        env.getConfig().setAutoWatermarkInterval(2000);
         
         SingleOutputStreamOperator<WaterSensor> dataStreamSource = env.socketTextStream("localhost", 8888)
                                                                       .map(new MapFunction<String, WaterSensor>() {
@@ -33,14 +35,16 @@ public class OutOfOrderMain {
                                                                           }
                                                                       });
         
-        WatermarkStrategy<WaterSensor> watermarkStrategy = WatermarkStrategy.<WaterSensor>forBoundedOutOfOrderness(Duration.ofSeconds(3))
-                                                                            .withTimestampAssigner(new SerializableTimestampAssigner<WaterSensor>() {
-                                                                                @Override
-                                                                                public long extractTimestamp(WaterSensor waterSensor, long recordTimestamp) {
-                                                                                    System.out.println("数据: " + waterSensor + ", 时间戳: " + recordTimestamp);
-                                                                                    return waterSensor.getVc() * 1000;
-                                                                                }
-                                                                            });
+        WatermarkStrategy<WaterSensor> watermarkStrategy = WatermarkStrategy
+                // .<WaterSensor>forGenerator(ctx -> new MyPeriodWatermarkGenerator<>(3000))
+                .<WaterSensor>forGenerator(ctx -> new MyBreakpointWatermarkGenerator<>(3000))
+                .withTimestampAssigner(new SerializableTimestampAssigner<WaterSensor>() {
+                    @Override
+                    public long extractTimestamp(WaterSensor waterSensor, long recordTimestamp) {
+                        System.out.println("数据: " + waterSensor + ", 时间戳: " + recordTimestamp);
+                        return waterSensor.getVc() * 1000;
+                    }
+                });
         SingleOutputStreamOperator<WaterSensor> singleOutputStreamOperator = dataStreamSource.assignTimestampsAndWatermarks(watermarkStrategy);
         
         singleOutputStreamOperator.keyBy(WaterSensor::getId)

@@ -14,7 +14,7 @@ import org.apache.flink.streaming.api.windowing.windows.TimeWindow;
 import org.apache.flink.util.Collector;
 
 /**
- * {@code @description:}
+ * {@code @description:} 有序流设置水位线
  */
 public class InOrderMain {
     public static void main(String[] args) throws Exception {
