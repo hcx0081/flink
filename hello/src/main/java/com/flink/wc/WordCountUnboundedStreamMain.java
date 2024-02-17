@@ -16,7 +16,7 @@ import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 public class WordCountUnboundedStreamMain {
     // public static void main(String[] args) throws Exception {
     //     StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
-    //     DataStreamSource<String> ds = env.socketTextStream("192.168.1.195", 7777);
+    //     DataStreamSource<String> ds = env.socketTextStream("192.168.1.195", 8888);
     //
     //     SingleOutputStreamOperator<Tuple2<String, Integer>> wordOne = ds.flatMap(new FlatMapFunction<String, Tuple2<String, Integer>>() {
     //         @Override
@@ -45,7 +45,7 @@ public class WordCountUnboundedStreamMain {
     public static void main(String[] args) throws Exception {
         // StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
         StreamExecutionEnvironment env = StreamExecutionEnvironment.createLocalEnvironmentWithWebUI(new Configuration());
-        DataStreamSource<String> ds = env.socketTextStream("192.168.1.195", 7777);
+        DataStreamSource<String> ds = env.socketTextStream("192.168.1.195", 8888);
         
         SingleOutputStreamOperator<Tuple2<String, Integer>> wordOne = ds.flatMap((FlatMapFunction<String, Tuple2<String, Integer>>) (value, collector) -> {
             String[] words = value.split(" ");
