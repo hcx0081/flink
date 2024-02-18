@@ -27,19 +27,16 @@ public class KeyedProcessFunctionMain {
                                                                         String[] datas = value.split(",");
                                                                         return new WaterSensor(datas[0], Long.parseLong(datas[1]), Integer.parseInt(datas[2]));
                                                                     }
-                                                                });
+                                                                })
+                                                                .assignTimestampsAndWatermarks(WatermarkStrategy.<WaterSensor>forBoundedOutOfOrderness(Duration.ofSeconds(3))
+                                                                                                                .withTimestampAssigner(new SerializableTimestampAssigner<WaterSensor>() {
+                                                                                                                    @Override
+                                                                                                                    public long extractTimestamp(WaterSensor waterSensor, long recordTimestamp) {
+                                                                                                                        return waterSensor.getVc() * 1000;
+                                                                                                                    }
+                                                                                                                }));
         
-        WatermarkStrategy<WaterSensor> watermarkStrategy = WatermarkStrategy.<WaterSensor>forBoundedOutOfOrderness(Duration.ofSeconds(3))
-                                                                            .withTimestampAssigner(new SerializableTimestampAssigner<WaterSensor>() {
-                                                                                @Override
-                                                                                public long extractTimestamp(WaterSensor waterSensor, long recordTimestamp) {
-                                                                                    return waterSensor.getVc() * 1000;
-                                                                                }
-                                                                            });
-        
-        KeyedStream<WaterSensor, String> keyedStream = dataStream
-                .assignTimestampsAndWatermarks(watermarkStrategy)
-                .keyBy(waterSensor -> waterSensor.getId());
+        KeyedStream<WaterSensor, String> keyedStream = dataStream.keyBy(waterSensor -> waterSensor.getId());
         
         SingleOutputStreamOperator<String> process = keyedStream.process(new KeyedProcessFunction<String, WaterSensor, String>() {
             @Override

@@ -22,7 +22,7 @@ import java.util.HashMap;
 /**
  * {@code @description:}
  */
-public class TopNDemoMain {
+public class TopNDemoProcessAllWindowFunctionMain {
     public static void main(String[] args) throws Exception {
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
         env.setParallelism(1);
@@ -75,11 +75,13 @@ public class TopNDemoMain {
                           str.append("========\n");
                           for (int i = 0; i < Math.min(2, list.size()); i++) {
                               Tuple2<Long, Long> vcAndCount = list.get(i);
-                              str.append("Top" + (i + 1) +
-                                      ", vc: " + vcAndCount.f0 +
-                                      ", count: " + vcAndCount.f1 +
-                                      ", 窗口开始时间: " + DateFormatUtils.format(context.window().getStart(), "yyyy-MM-dd HH:mm:ss.SSS") +
-                                      ", 窗口结束时间: " + DateFormatUtils.format(context.window().getEnd(), "yyyy-MM-dd HH:mm:ss.SSS"));
+                              str.append(
+                                      "Top" + (i + 1) +
+                                              ", vc: " + vcAndCount.f0 +
+                                              ", count: " + vcAndCount.f1 +
+                                              ", 窗口开始时间: " + DateFormatUtils.format(context.window().getStart(), "yyyy-MM-dd HH:mm:ss.SSS") +
+                                              ", 窗口结束时间: " + DateFormatUtils.format(context.window().getEnd(), "yyyy-MM-dd HH:mm:ss.SSS")
+                              );
                               str.append("\n");
                           }
                           str.append("========");
