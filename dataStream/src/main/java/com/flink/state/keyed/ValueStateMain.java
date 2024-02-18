@@ -48,7 +48,7 @@ public class ValueStateMain {
                       
                       @Override
                       public void processElement(WaterSensor waterSensor, KeyedProcessFunction<String, WaterSensor, String>.Context ctx, Collector<String> out) throws Exception {
-                          int lastVc = vcValueState.value() == null ? 0 : vcValueState.value();
+                          Integer lastVc = vcValueState.value() == null ? 0 : vcValueState.value();
                           Integer vc = waterSensor.getVc();
                           if (Math.abs(vc - lastVc) > 10) {
                               out.collect(
