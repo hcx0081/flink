@@ -1,6 +1,5 @@
 package com.flink.wc;
 
-import org.apache.flink.api.common.functions.FlatMapFunction;
 import org.apache.flink.api.common.typeinfo.Types;
 import org.apache.flink.api.java.functions.KeySelector;
 import org.apache.flink.api.java.tuple.Tuple2;
@@ -47,7 +46,7 @@ public class WordCountUnboundedStreamMain {
         StreamExecutionEnvironment env = StreamExecutionEnvironment.createLocalEnvironmentWithWebUI(new Configuration());
         DataStreamSource<String> ds = env.socketTextStream("192.168.1.195", 8888);
         
-        SingleOutputStreamOperator<Tuple2<String, Integer>> wordOne = ds.flatMap((FlatMapFunction<String, Tuple2<String, Integer>>) (value, collector) -> {
+        SingleOutputStreamOperator<Tuple2<String, Integer>> wordOne = ds.flatMap((value, collector) -> {
             String[] words = value.split(" ");
             for (String word : words) {
                 Tuple2<String, Integer> wordTuple2 = Tuple2.of(word, 1);
