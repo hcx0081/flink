@@ -15,12 +15,22 @@ public class CheckpointMain {
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
         env.setParallelism(1);
         
+        System.setProperty("HADOOP_USER_NAME", "hadoop");
+        
+        env.setDefaultSavepointDirectory("");
+        
         // 启用检查点
         env.enableCheckpointing(5000, CheckpointingMode.EXACTLY_ONCE);
         // 指定检查点的存储位置
         CheckpointConfig checkpointConfig = env.getCheckpointConfig();
-        checkpointConfig.setCheckpointStorage("");
-        // checkpointConfig.setCheckpointTimeout();
+        checkpointConfig.setCheckpointStorage("hdfs://hadoop1:8020/cp");
+        checkpointConfig.setCheckpointTimeout(50000);
+        checkpointConfig.setMaxConcurrentCheckpoints(2);
+        checkpointConfig.setMinPauseBetweenCheckpoints(1000);
+        checkpointConfig.setExternalizedCheckpointCleanup(CheckpointConfig.ExternalizedCheckpointCleanup.DELETE_ON_CANCELLATION);
+        checkpointConfig.setTolerableCheckpointFailureNumber(10);
+        
+        checkpointConfig.enableUnalignedCheckpoints();
         
         env.socketTextStream("localhost", 8888)
            .flatMap((String value, Collector<Tuple2<String, Integer>> out) -> {
