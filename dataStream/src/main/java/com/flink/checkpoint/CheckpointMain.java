@@ -19,7 +19,7 @@ public class CheckpointMain {
         
         env.setDefaultSavepointDirectory("");
         
-        // 启用检查点
+        // 开启检查点
         env.enableCheckpointing(5000, CheckpointingMode.EXACTLY_ONCE);
         // 指定检查点的存储位置
         CheckpointConfig checkpointConfig = env.getCheckpointConfig();
@@ -41,7 +41,6 @@ public class CheckpointMain {
            })
            .returns(Types.TUPLE(Types.STRING, Types.INT))
            .keyBy(value -> value.f0);
-        
         
         env.execute();
     }
