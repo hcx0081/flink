@@ -6,7 +6,10 @@ import org.apache.flink.table.api.bridge.java.StreamTableEnvironment;
 
 import static org.apache.flink.table.api.Expressions.$;
 
-public class Main {
+/**
+ * {@code @description:}
+ */
+public class TableMain {
     public static void main(String[] args) {
         // EnvironmentSettings settings = EnvironmentSettings.newInstance()
         //                                                   .inStreamingMode()
