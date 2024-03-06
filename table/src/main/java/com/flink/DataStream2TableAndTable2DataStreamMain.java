@@ -9,7 +9,7 @@ import org.apache.flink.table.api.bridge.java.StreamTableEnvironment;
 /**
  * {@code @description:}
  */
-public class DataStream2TableMain {
+public class DataStream2TableAndTable2DataStreamMain {
     public static void main(String[] args) throws Exception {
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
         
@@ -25,7 +25,7 @@ public class DataStream2TableMain {
         Table waterSensorTable = tEnv.fromDataStream(dataStream);
         tEnv.createTemporaryView("water_sensor", waterSensorTable);
         Table table = tEnv.sqlQuery("select * from water_sensor");
-        table.printSchema();
+        table.execute().print();
         
         // 表转流
         // DataStream<WaterSensor> waterSensorDataStream = tEnv.toDataStream(table, WaterSensor.class);

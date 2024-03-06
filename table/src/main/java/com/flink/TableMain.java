@@ -45,11 +45,13 @@ public class TableMain {
                 "    'connector' = 'print'\n" +
                 ");");
         
+        // SQL
         // Table table1 = tEnv.sqlQuery("select * from source where id > 5;");
         // tEnv.createTemporaryView("tmp", table1);
         // tEnv.executeSql("select * from tmp;");
         // tEnv.executeSql("insert into sink select * from tmp;");
         
+        // Table API
         Table table2 = tEnv.from("source").where($("id").isGreater(5)).select($("*"));
         tEnv.createTemporaryView("tmp", table2);
         tEnv.from("tmp").select($("*")).executeInsert("sink");
