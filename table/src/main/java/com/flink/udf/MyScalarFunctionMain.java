@@ -15,7 +15,7 @@ import static org.apache.flink.table.api.Expressions.call;
 /**
  * {@code @description:} 自定义标量函数
  */
-public class MyScalarFuncMain {
+public class MyScalarFunctionMain {
     public static void main(String[] args) {
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
         
