@@ -14,7 +14,7 @@ import org.apache.flink.types.Row;
 /**
  * {@code @description:} 自定义表值函数
  */
-public class MyTableFuncMain {
+public class MyTableFunctionMain {
     public static void main(String[] args) {
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
         
@@ -28,8 +28,9 @@ public class MyTableFuncMain {
         
         // 流转表
         Table table = tEnv.fromDataStream(dataStream, Schema.newBuilder()
-                                                            .column("words", DataTypes.STRING())
-                                                            .build());
+                                                            .column("f0", DataTypes.STRING())
+                                                            .build())
+                          .as("words");
         tEnv.createTemporaryView("table", table);
         
         // 注册UDF
@@ -37,9 +38,9 @@ public class MyTableFuncMain {
         
         // SQL调用
         tEnv
-                // .sqlQuery("SELECT words, word, length FROM table, LATERAL TABLE(SplitFunction(words));")
+                .sqlQuery("SELECT words, word, length FROM table, LATERAL TABLE(SplitFunction(words));")
                 // .sqlQuery("SELECT words, word, length FROM table left join LATERAL TABLE(SplitFunction(words)) on true;")
-                .sqlQuery("SELECT words, newWord, newLength FROM table left join LATERAL TABLE(SplitFunction(words)) as T(newWord, newLength) on true;")
+                // .sqlQuery("SELECT words, newWord, newLength FROM table left join LATERAL TABLE(SplitFunction(words)) as T(newWord, newLength) on true;")
                 .execute().print();
         // Table API调用
         // tEnv.from("table").select(call("SplitFunction", $("words")))
