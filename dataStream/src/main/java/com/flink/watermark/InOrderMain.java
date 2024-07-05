@@ -22,23 +22,25 @@ public class InOrderMain {
         
         env.setParallelism(1);
         
-        SingleOutputStreamOperator<WaterSensor> dataStreamSource = env.socketTextStream("localhost", 8888)
-                                                                      .map(new MapFunction<String, WaterSensor>() {
-                                                                          @Override
-                                                                          public WaterSensor map(String value) throws Exception {
-                                                                              String[] datas = value.split(",");
-                                                                              return new WaterSensor(datas[0], Long.parseLong(datas[1]), Integer.parseInt(datas[2]));
-                                                                          }
-                                                                      });
+        SingleOutputStreamOperator<WaterSensor> dataStreamSource =
+                env.socketTextStream("localhost", 8888)
+                   .map(new MapFunction<String, WaterSensor>() {
+                       @Override
+                       public WaterSensor map(String value) throws Exception {
+                           String[] datas = value.split(",");
+                           return new WaterSensor(datas[0], Long.parseLong(datas[1]), Integer.parseInt(datas[2]));
+                       }
+                   });
         
-        WatermarkStrategy<WaterSensor> watermarkStrategy = WatermarkStrategy.<WaterSensor>forMonotonousTimestamps()
-                                                                            .withTimestampAssigner(new SerializableTimestampAssigner<WaterSensor>() {
-                                                                                @Override
-                                                                                public long extractTimestamp(WaterSensor waterSensor, long recordTimestamp) {
-                                                                                    System.out.println("数据: " + waterSensor + ", 时间戳: " + recordTimestamp);
-                                                                                    return waterSensor.getVc() * 1000;
-                                                                                }
-                                                                            });
+        WatermarkStrategy<WaterSensor> watermarkStrategy =
+                WatermarkStrategy.<WaterSensor>forMonotonousTimestamps()
+                                 .withTimestampAssigner(new SerializableTimestampAssigner<WaterSensor>() {
+                                     @Override
+                                     public long extractTimestamp(WaterSensor waterSensor, long recordTimestamp) {
+                                         System.out.println("数据: " + waterSensor + ", 时间戳: " + recordTimestamp);
+                                         return waterSensor.getVc() * 1000;
+                                     }
+                                 });
         SingleOutputStreamOperator<WaterSensor> singleOutputStreamOperator = dataStreamSource.assignTimestampsAndWatermarks(watermarkStrategy);
         
         singleOutputStreamOperator.keyBy(WaterSensor::getId)
