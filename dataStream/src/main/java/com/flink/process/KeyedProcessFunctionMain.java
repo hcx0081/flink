@@ -45,8 +45,8 @@ public class KeyedProcessFunctionMain {
                 Long ts = ctx.timestamp();
                 // 定时器
                 TimerService timerService = ctx.timerService();
-                // timerService.registerEventTimeTimer(5000);
-                timerService.registerProcessingTimeTimer(5000);
+                // timerService.registerEventTimeTimer(System.currentTimeMillis() + 5000);
+                timerService.registerProcessingTimeTimer(System.currentTimeMillis() + 5000);
                 System.out.println("key: " + key + ", 时间戳: " + ts + ", 注册一个定时器");
             }
             
